@@ -14,7 +14,7 @@ func main() {
 
 	// Set the Date
 	hDate.SetTime(now)
-	hDate.SetGdate(25, 3, 2016)
+	//or, for example, shushan purim- hDate.SetGdate(25, 3, 2016)
 
 	// get holydays
 	holyday := hDate.GetHolyday()
@@ -43,16 +43,6 @@ func main() {
 	times := make([]int, 8)
 
 	libhdate.GetUtcSunTimeFull(hDate.GetGday(), hDate.GetGmonth(), hDate.GetGyear(), latitude, longitude, &times[0], &times[1], &times[2], &times[3], &times[4], &times[5], &times[6], &times[7])
-
-	/*
-		var timeZone = 3 * 60;
-		// adjust time zone
-		var timeStrings = times.slice(1).map(function (t) {
-		t += timeZone;
-		return "" + Math.floor(t / 60) + ":" + (t % 60);
-		});
-		console.log(timeStrings);
-	*/
 
 	timeZone := 3 * 60
 	timeStrings := make([]string, len(times))
