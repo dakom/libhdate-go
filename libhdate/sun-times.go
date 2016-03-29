@@ -12,7 +12,7 @@ import (
 @parm year this year
 @return the days from 1 jan
 */
-func HdateGetDayOfYear(day int, month int, year int) int {
+func getDayOfYear(day int, month int, year int) int {
 	var jd int
 
 	/* get todays julian day number */
@@ -44,7 +44,7 @@ the sky there.
 @param sunrise return the utc sunrise in minutes
 @param sunset return the utc sunset in minutes
 */
-func HdateGetUtcSunTimeDeg(day int, month int, year int, latitude float64, longitude float64, deg float64, sunrise *int, sunset *int) {
+func getUtcSunTimeDeg(day int, month int, year int, latitude float64, longitude float64, deg float64, sunrise *int, sunset *int) {
 	var gama float64                                  /* location of sun in yearly cycle in radians */
 	var eqtime float64                                /* diffference betwen sun noon and clock noon */
 	var decl float64                                  /* sun declanation */
@@ -54,7 +54,7 @@ func HdateGetUtcSunTimeDeg(day int, month int, year int, latitude float64, longi
 	var day_of_year int
 
 	/* get the day of year */
-	day_of_year = HdateGetDayOfYear(day, month, year)
+	day_of_year = getDayOfYear(day, month, year)
 
 	/* get radians of sun orbit around erth =) */
 	gama = 2.0 * math.Pi * ((float64)(day_of_year-1) / 365.0)
@@ -103,8 +103,8 @@ func HdateGetUtcSunTimeDeg(day int, month int, year int, latitude float64, longi
 @parm sunrise return the utc sunrise in minutes
 @parm sunset return the utc sunset in minutes
 */
-func HdateGetUtcSunTime(day int, month int, year int, latitude float64, longitude float64, sunrise *int, sunset *int) {
-	HdateGetUtcSunTimeDeg(day, month, year, latitude, longitude, 90.833, sunrise, sunset)
+func getUtcSunTime(day int, month int, year int, latitude float64, longitude float64, sunrise *int, sunset *int) {
+	getUtcSunTimeDeg(day, month, year, latitude, longitude, 90.833, sunrise, sunset)
 
 	return
 }
@@ -126,21 +126,21 @@ func HdateGetUtcSunTime(day int, month int, year int, latitude float64, longitud
 @parm first_stars return the utc tzeit hacochavim in minutes
 @parm three_stars return the utc shlosha cochavim in minutes
 */
-func HdateGetUtcSunTimeFull(day int, month int, year int, latitude float64, longitude float64, sun_hour *int, first_light *int, talit *int, sunrise *int, midday *int, sunset *int, first_stars *int, three_stars *int) {
+func GetUtcSunTimeFull(day int, month int, year int, latitude float64, longitude float64, sun_hour *int, first_light *int, talit *int, sunrise *int, midday *int, sunset *int, first_stars *int, three_stars *int) {
 	var place_holder int
 
 	/* sunset and rise time */
-	HdateGetUtcSunTimeDeg(day, month, year, latitude, longitude, 90.833, sunrise, sunset)
+	getUtcSunTimeDeg(day, month, year, latitude, longitude, 90.833, sunrise, sunset)
 
 	/* shaa zmanit by gara, 1/12 of light time */
 	*sun_hour = (*sunset - *sunrise) / 12
 	*midday = (*sunset + *sunrise) / 2
 
 	/* get times of the different sun angles */
-	HdateGetUtcSunTimeDeg(day, month, year, latitude, longitude, 106.01, first_light, &place_holder)
-	HdateGetUtcSunTimeDeg(day, month, year, latitude, longitude, 101.0, talit, &place_holder)
-	HdateGetUtcSunTimeDeg(day, month, year, latitude, longitude, 96.0, &place_holder, first_stars)
-	HdateGetUtcSunTimeDeg(day, month, year, latitude, longitude, 98.5, &place_holder, three_stars)
+	getUtcSunTimeDeg(day, month, year, latitude, longitude, 106.01, first_light, &place_holder)
+	getUtcSunTimeDeg(day, month, year, latitude, longitude, 101.0, talit, &place_holder)
+	getUtcSunTimeDeg(day, month, year, latitude, longitude, 96.0, &place_holder, first_stars)
+	getUtcSunTimeDeg(day, month, year, latitude, longitude, 98.5, &place_holder, three_stars)
 
 	return
 }

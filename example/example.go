@@ -13,13 +13,13 @@ func main() {
 	now := time.Now()
 
 	// Set the Date
-	libhdate.HdateSetGoTime(hDate, now)
-	libhdate.HdateSetGdate(hDate, 25, 3, 2016)
+	hDate.SetTime(now)
+	hDate.SetGdate(25, 3, 2016)
 
 	// get holydays
-	holyday := libhdate.HdateGetHolyday(hDate, false)
-	omer := libhdate.HdateGetOmerDay(hDate)
-	reading := libhdate.HdateGetParasha(hDate, false)
+	holyday := hDate.GetHolyday()
+	omer := hDate.GetOmerDay()
+	reading := hDate.GetParasha()
 
 	// HDATE_STRING_INT     0
 	// HDATE_STRING_DOW     1
@@ -32,9 +32,9 @@ func main() {
 	// HDATE_STRING_LONG    0
 	// HDATE_STRING_HEBREW  1
 	// HDATE_STRING_LOCAL   0
-	holydayName := libhdate.HdateString(libhdate.HDATE_STRING_HOLIDAY, holyday, false, false)
+	holydayName := libhdate.GetString(libhdate.HDATE_STRING_HOLIDAY, holyday, false, false)
 
-	readingName := libhdate.HdateString(libhdate.HDATE_STRING_PARASHA, reading, false, false)
+	readingName := libhdate.GetString(libhdate.HDATE_STRING_PARASHA, reading, false, false)
 
 	// get times
 	latitude := 31.8903
@@ -42,7 +42,7 @@ func main() {
 
 	times := make([]int, 8)
 
-	libhdate.HdateGetUtcSunTimeFull(libhdate.HdateGetGday(hDate), libhdate.HdateGetGmonth(hDate), libhdate.HdateGetGyear(hDate), latitude, longitude, &times[0], &times[1], &times[2], &times[3], &times[4], &times[5], &times[6], &times[7])
+	libhdate.GetUtcSunTimeFull(hDate.GetGday(), hDate.GetGmonth(), hDate.GetGyear(), latitude, longitude, &times[0], &times[1], &times[2], &times[3], &times[4], &times[5], &times[6], &times[7])
 
 	/*
 		var timeZone = 3 * 60;

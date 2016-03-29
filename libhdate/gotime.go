@@ -4,8 +4,8 @@ import (
 	"time"
 )
 
-func HdateSetGoTime(h *HebDate, t time.Time) *HebDate {
+func (h *HebDate) SetTime(t time.Time) {
 	year, month, day := t.Date()
 
-	return HdateSetGdate(h, day, int(month), year)
+	h.SetGdate(day, int(month), year)
 }

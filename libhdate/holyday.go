@@ -7,7 +7,7 @@ package libhdate
 @param diaspora if True give diaspora holydays
 @return the number of holyday.
 */
-func HdateGetHolyday(h *HebDate, diaspora bool) int {
+func (h *HebDate) GetHolyday() int {
 	var holyday int
 
 	/* holydays table */
@@ -199,26 +199,26 @@ func HdateGetHolyday(h *HebDate, diaspora bool) int {
 	/* diaspora holidays */
 
 	/* simchat tora only in diaspora in israel just one day shmini+simchat tora */
-	if holyday == 8 && !diaspora {
+	if holyday == 8 && !h.diaspora {
 		holyday = 0
 	}
 	/* sukkot II holiday only in diaspora */
-	if holyday == 31 && !diaspora {
+	if holyday == 31 && !h.diaspora {
 		holyday = 6
 	}
 
 	/* pesach II holiday only in diaspora */
-	if holyday == 32 && !diaspora {
+	if holyday == 32 && !h.diaspora {
 		holyday = 16
 	}
 
 	/* shavot II holiday only in diaspora */
-	if holyday == 30 && !diaspora {
+	if holyday == 30 && !h.diaspora {
 		holyday = 0
 	}
 
 	/* pesach VIII holiday only in diaspora */
-	if holyday == 29 && !diaspora {
+	if holyday == 29 && !h.diaspora {
 		holyday = 0
 	}
 
@@ -231,11 +231,11 @@ func HdateGetHolyday(h *HebDate, diaspora bool) int {
 @param h The HebDate of the date to use.
 @return The day in the omer, starting from 1 (or 0 if not in sfirat ha omer)
 */
-func HdateGetOmerDay(h *HebDate) int {
+func (h *HebDate) GetOmerDay() int {
 	var omer_day int
-	var sixteen_nissan HebDate
+	sixteen_nissan := &HebDate{}
 
-	HdateSetHdate(&sixteen_nissan, 16, 7, h.hd_year)
+	sixteen_nissan.SetHdate(16, 7, h.hd_year)
 	omer_day = h.hd_jd - sixteen_nissan.hd_jd + 1
 
 	if (omer_day > 49) || (omer_day < 0) {
@@ -264,7 +264,7 @@ func HdateGetOmerDay(h *HebDate) int {
 @return the number of holyday type.
 */
 
-func HdateGetHolydayType(holyday int) int {
+func getHolydayType(holyday int) int {
 	var holyday_type int
 
 	switch holyday {

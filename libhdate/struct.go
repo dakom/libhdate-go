@@ -4,6 +4,10 @@ package libhdate
   @brief libhdate Hebrew date struct
 */
 type HebDate struct {
+	/** is diaspora */
+	diaspora bool
+	/** is Hebrew locale */
+	isHebrewLocale bool
 	/** The number of day in the hebrew month (1..31). */
 	hd_day int
 	/** The number of the hebrew month 1..14 (1 - tishre, 13 - adar 1, 14 - adar 2). */
@@ -33,5 +37,5 @@ type HebDate struct {
 }
 
 func (h *HebDate) String() string {
-	return HdateGetFormatDate(h, false, false)
+	return h.GetFormatDate(false)
 }

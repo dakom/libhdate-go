@@ -10,7 +10,7 @@ package libhdate
 @return the name of parasha 1. Bereshit etc..
 (55 trow 61 are joined strings e.g. Vayakhel Pekudei)
 */
-func HdateGetParasha(h *HebDate, diaspora bool) int {
+func (h *HebDate) GetParasha() int {
 	var join_flags = [2][14][7]int{
 		{
 			{1, 1, 1, 1, 0, 1, 1}, /* 1 be erez israel */
@@ -48,17 +48,17 @@ func HdateGetParasha(h *HebDate, diaspora bool) int {
 
 	var reading int
 	var diasporaIndex int
-	if diaspora {
+	if h.diaspora {
 		diasporaIndex = 1
 	}
 
 	/* if simhat tora return vezot habracha */
 	if h.hd_mon == 1 {
 		/* simhat tora is a day after shmini atzeret outsite israel */
-		if h.hd_day == 22 && !diaspora {
+		if h.hd_day == 22 && !h.diaspora {
 			return 54
 		}
-		if h.hd_day == 23 && diaspora {
+		if h.hd_day == 23 && h.diaspora {
 			return 54
 		}
 	}
@@ -98,7 +98,7 @@ func HdateGetParasha(h *HebDate, diaspora bool) int {
 	case 4:
 		if h.hd_new_year_dw == 7 {
 			/* Simhat tora in israel */
-			if !diaspora {
+			if !h.diaspora {
 				return 54
 			} else { /* Not simhat tora in diaspora */
 				return 0
@@ -123,10 +123,10 @@ func HdateGetParasha(h *HebDate, diaspora bool) int {
 		/* pesach */
 		if (h.hd_mon == 7) && (h.hd_day > 14) {
 			/* Shmini of pesach in diaspora is on the 22 of the month*/
-			if diaspora && (h.hd_day <= 22) {
+			if h.diaspora && (h.hd_day <= 22) {
 				return 0
 			}
-			if !diaspora && (h.hd_day < 22) {
+			if !h.diaspora && (h.hd_day < 22) {
 				return 0
 			}
 		}
@@ -136,13 +136,13 @@ func HdateGetParasha(h *HebDate, diaspora bool) int {
 			reading--
 
 			/* on diaspora, shmini of pesach may fall on shabat if next new year is on shabat */
-			if diaspora && (((h.hd_new_year_dw + h.hd_size_of_year) % 7) == 2) {
+			if h.diaspora && (((h.hd_new_year_dw + h.hd_size_of_year) % 7) == 2) {
 				reading--
 			}
 		}
 
 		/* on diaspora, shavot may fall on shabat if next new year is on shabat */
-		if diaspora && (h.hd_mon < 13) && ((h.hd_mon > 9) || (h.hd_mon == 9 && h.hd_day >= 7)) && ((h.hd_new_year_dw+h.hd_size_of_year)%7) == 0 {
+		if h.diaspora && (h.hd_mon < 13) && ((h.hd_mon > 9) || (h.hd_mon == 9 && h.hd_day >= 7)) && ((h.hd_new_year_dw+h.hd_size_of_year)%7) == 0 {
 			if h.hd_mon == 9 && h.hd_day == 7 {
 				return 0
 			} else {

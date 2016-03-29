@@ -5,16 +5,6 @@ import (
 )
 
 /**
-@brief helper function to find hebrew locale
-
-@return 0 - latin locale, -1 - hebrew locale
-*/
-func HdateIsHebrewLocale() bool {
-	//update this.... allow setting locale?
-	return false
-}
-
-/**
 @brief Return a string, with the hebrew date.
 
 @return NULL pointer upon failure or, upon success, a pointer to a
@@ -22,31 +12,27 @@ string containing the short ( e.g. "1 Tishrey" ) or long (e.g. "Tuesday
 18 Tishrey 5763 Hol hamoed Sukot" ) formated date. You must free() the
 pointer after use.
 
-@param h The hdate_struct of the date to print.
-@param diaspora if true give diaspora holydays
 @param short_format A short flag (true - returns a short string, false returns a long string).
 
-@warning This was originally written using a local static string,
-         calling for output to be copied away.
 */
 
-func HdateGetFormatDate(h *HebDate, diaspora bool, short_format bool) string {
+func (h *HebDate) GetFormatDate(short_format bool) string {
 	var hebrew_format bool = HDATE_STRING_LOCAL
 	var omer_day, holiday int
 	var bet_h, hebrew_buffer1, hebrew_buffer2, hday_int_str, hyear_int_str, omer_str string
 	var hebrew_buffer1_len, hebrew_buffer2_len int = -1, -1
 
-	if HdateIsHebrewLocale() {
+	if h.isHebrewLocale {
 		bet_h = "ב"
 		hebrew_format = HDATE_STRING_HEBREW
 	}
 
-	hday_int_str = HdateString(HDATE_STRING_INT, h.hd_day, HDATE_STRING_LONG, hebrew_format)
+	hday_int_str = GetString(HDATE_STRING_INT, h.hd_day, HDATE_STRING_LONG, hebrew_format)
 	if hday_int_str == "" {
 		return ""
 	}
 
-	hyear_int_str = HdateString(HDATE_STRING_INT, h.hd_year, HDATE_STRING_LONG, hebrew_format)
+	hyear_int_str = GetString(HDATE_STRING_INT, h.hd_year, HDATE_STRING_LONG, hebrew_format)
 	if hyear_int_str == "" {
 		return ""
 	}
@@ -55,18 +41,18 @@ func HdateGetFormatDate(h *HebDate, diaspora bool, short_format bool) string {
 	* short format
 	************************************************************/
 	if short_format {
-		hebrew_buffer1 = fmt.Sprintf("%s %s %s\n", hday_int_str, HdateString(HDATE_STRING_HMONTH, h.hd_mon, HDATE_STRING_LONG, hebrew_format), hyear_int_str)
+		hebrew_buffer1 = fmt.Sprintf("%s %s %s\n", hday_int_str, GetString(HDATE_STRING_HMONTH, h.hd_mon, HDATE_STRING_LONG, hebrew_format), hyear_int_str)
 		hebrew_buffer1_len = len(hebrew_buffer1)
 	} else {
-		hebrew_buffer1 = fmt.Sprintf("%s %s%s %s", hday_int_str, bet_h, HdateString(HDATE_STRING_HMONTH, h.hd_mon, HDATE_STRING_LONG, hebrew_format), hyear_int_str)
+		hebrew_buffer1 = fmt.Sprintf("%s %s%s %s", hday_int_str, bet_h, GetString(HDATE_STRING_HMONTH, h.hd_mon, HDATE_STRING_LONG, hebrew_format), hyear_int_str)
 		hebrew_buffer1_len = len(hebrew_buffer1)
 
 		/* if a day in the omer print it */
 		if hebrew_buffer1_len != -1 {
-			omer_day = HdateGetOmerDay(h)
+			omer_day = h.GetOmerDay()
 		}
 		if omer_day != 0 {
-			omer_str = HdateString(HDATE_STRING_OMER, omer_day, HDATE_STRING_LONG, hebrew_format)
+			omer_str = GetString(HDATE_STRING_OMER, omer_day, HDATE_STRING_LONG, hebrew_format)
 
 			hebrew_buffer2 = fmt.Sprintf("%s, %s", hebrew_buffer1, omer_str)
 			hebrew_buffer2_len = len(hebrew_buffer2)
@@ -79,10 +65,10 @@ func HdateGetFormatDate(h *HebDate, diaspora bool, short_format bool) string {
 
 		/* if holiday print it */
 		if hebrew_buffer1_len != -1 {
-			holiday = HdateGetHolyday(h, diaspora)
+			holiday = h.GetHolyday()
 		}
 		if holiday != 0 {
-			hebrew_buffer2 = fmt.Sprintf("%s, %s", hebrew_buffer1, HdateString(HDATE_STRING_HOLIDAY, holiday, HDATE_STRING_LONG, hebrew_format))
+			hebrew_buffer2 = fmt.Sprintf("%s, %s", hebrew_buffer1, GetString(HDATE_STRING_HOLIDAY, holiday, HDATE_STRING_LONG, hebrew_format))
 			hebrew_buffer2_len = len(hebrew_buffer2)
 
 			if hebrew_buffer2_len != -1 {
@@ -104,7 +90,7 @@ func HdateGetFormatDate(h *HebDate, diaspora bool, short_format bool) string {
 
 @return a a static string, with the package name and version
 */
-func HdateGetVersionString() string {
+func GetVersionString() string {
 	return ("")
 }
 
@@ -113,7 +99,7 @@ func HdateGetVersionString() string {
 
 @return a a static string, with the name of translator
 */
-func HdateGetTranslatorString() string {
+func GetTranslatorString() string {
 	return ""
 }
 
@@ -152,7 +138,7 @@ func HdateGetTranslatorString() string {
 // HDATE_STRING_LONG    0
 // HDATE_STRING_HEBREW  1
 // HDATE_STRING_LOCAL   0
-func HdateString(type_of_string int, index int, input_short_form bool, input_hebrew_form bool) string {
+func GetString(type_of_string int, index int, input_short_form bool, input_hebrew_form bool) string {
 	var short_form, hebrew_form int
 	var return_string_len int = -1
 	var return_string, h_int_string string
@@ -423,7 +409,7 @@ func HdateString(type_of_string int, index int, input_short_form bool, input_heb
 		}
 	case HDATE_STRING_OMER:
 		if index > 0 && index < 50 {
-			h_int_string = HdateString(HDATE_STRING_INT, index, HDATE_STRING_LONG, input_hebrew_form)
+			h_int_string = GetString(HDATE_STRING_INT, index, HDATE_STRING_LONG, input_hebrew_form)
 			if h_int_string == "" {
 				return ""
 			}

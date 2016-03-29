@@ -1,11 +1,13 @@
 package libhdate
 
+import "time"
+
 const HOUR int = 1080
 const DAY int = (24 * HOUR)
 const WEEK int = (7 * DAY)
 const MONTH int = (DAY + ((12 * HOUR) + 793))
 
-func Molad(hours int, parts int) int {
+func molad(hours int, parts int) int {
 	return ((hours * HOUR) + parts)
 }
 
@@ -17,12 +19,12 @@ func Molad(hours int, parts int) int {
 @param hebrew_year The Hebrew year
 @return Number of days since 3,1,3744
 */
-func HdateDaysFrom3744(hebrew_year int) int {
+func getDaysFrom3744(hebrew_year int) int {
 	var years_from_3744, molad_3744, leap_months, leap_left, months, parts, days, parts_left_in_week, parts_left_in_day, week_day int
 
 	/* Start point for calculation is Molad new year 3744 (16BC) */
 	years_from_3744 = hebrew_year - 3744
-	molad_3744 = Molad(1+6, 779) /* Molad 3744 + 6 hours in parts */
+	molad_3744 = molad(1+6, 779) /* Molad 3744 + 6 hours in parts */
 
 	/* Time in months */
 	leap_months = (years_from_3744*7 + 1) / 19 /* Number of leap months */
@@ -39,7 +41,7 @@ func HdateDaysFrom3744(hebrew_year int) int {
 	week_day = parts_left_in_week / DAY
 
 	/* Special cases of Molad Zaken */
-	if (leap_left < 12 && week_day == 3 && parts_left_in_day >= Molad(9+6, 204)) || (leap_left < 7 && week_day == 2 && parts_left_in_day >= Molad(15+6, 589)) {
+	if (leap_left < 12 && week_day == 3 && parts_left_in_day >= molad(9+6, 204)) || (leap_left < 7 && week_day == 2 && parts_left_in_day >= molad(15+6, 589)) {
 		days++
 		week_day++
 	}
@@ -58,8 +60,8 @@ func HdateDaysFrom3744(hebrew_year int) int {
 @param hebrew_year The Hebrew year
 @return Size of Hebrew year
 */
-func HdateGetSizeOfHebrewYear(hebrew_year int) int {
-	return HdateDaysFrom3744(hebrew_year+1) - HdateDaysFrom3744(hebrew_year)
+func getSizeOfHebrewYear(hebrew_year int) int {
+	return getDaysFrom3744(hebrew_year+1) - getDaysFrom3744(hebrew_year)
 }
 
 /**
@@ -85,7 +87,7 @@ year type | year length | Tishery 1 day of week
 @param new_year_dw First week day of year
 @return A number for year type (1..14)
 */
-func HdateGetYearType(size_of_year int, new_year_dw int) int {
+func getYearType(size_of_year int, new_year_dw int) int {
 	/* Only 14 combinations of size and week day are posible */
 	year_types := [24]int{1, 0, 0, 2, 0, 3, 4, 0, 5, 0, 6, 7, 8, 0, 9, 10, 0, 11, 0, 0, 12, 0, 13, 14}
 
@@ -112,7 +114,7 @@ Algorithm from the wikipedia's julian_day
 @param year Year in 4 digits e.g. 2001
 @return The julian day number
 */
-func HdateGdateToJd(day int, month int, year int) int {
+func gDateToJd(day int, month int, year int) int {
 	var a, y, m, jdn int
 
 	a = (14 - month) / 12
@@ -134,7 +136,7 @@ func HdateGdateToJd(day int, month int, year int) int {
 @param year Hebrew year in 4 digits e.g. 5753
 @return The julian day number
 */
-func HdateHdateToJd(day int, month int, year int, jd_tishrey1 *int, jd_tishrey1_next_year *int) int {
+func hDateToJd(day int, month int, year int, jd_tishrey1 *int, jd_tishrey1_next_year *int) int {
 	var length_of_year, jd, days_from_3744 int
 
 	/* Adjust for leap year */
@@ -147,11 +149,11 @@ func HdateHdateToJd(day int, month int, year int, jd_tishrey1 *int, jd_tishrey1_
 	}
 
 	/* Calculate days since 1,1,3744 */
-	days_from_3744 = HdateDaysFrom3744(year)
+	days_from_3744 = getDaysFrom3744(year)
 	day = days_from_3744 + (59*(month-1)+1)/2 + day
 
 	/* length of year */
-	length_of_year = HdateDaysFrom3744(year+1) - days_from_3744
+	length_of_year = getDaysFrom3744(year+1) - days_from_3744
 
 	/* Special cases for this year */
 	if length_of_year%10 > 4 && month > 2 { /* long Heshvan */
@@ -187,7 +189,7 @@ Algorithm from 'Julian and Gregorian Day Numbers' by Peter Meyer
 @param m Return Month 1..12
 @param y Return Year in 4 digits e.g. 2001
 */
-func HdateJdToGdate(jd int, d *int, m *int, y *int) {
+func jDToGdate(jd int, d *int, m *int, y *int) {
 	var l, n, i, j int
 
 	l = jd + 68569
@@ -214,23 +216,23 @@ func HdateJdToGdate(jd int, d *int, m *int, y *int) {
 @param month Return Month 1..14 (13 - Adar 1, 14 - Adar 2)
 @param year Return Year in 4 digits e.g. 2001
 */
-func HdateJdToHdate(jd int, day *int, month *int, year *int, jd_tishrey1 *int, jd_tishrey1_next_year *int) {
+func jDToHdate(jd int, day *int, month *int, year *int, jd_tishrey1 *int, jd_tishrey1_next_year *int) {
 	var days, size_of_year, internal_jd_tishrey1, internal_jd_tishrey1_next_year int
 
 	/* calculate Gregorian date */
-	HdateJdToGdate(jd, day, month, year)
+	jDToGdate(jd, day, month, year)
 
 	/* Guess Hebrew year is Gregorian year + 3760 */
 	*year = *year + 3760
 
-	internal_jd_tishrey1 = HdateDaysFrom3744(*year) + 1715119
-	internal_jd_tishrey1_next_year = HdateDaysFrom3744(*year+1) + 1715119
+	internal_jd_tishrey1 = getDaysFrom3744(*year) + 1715119
+	internal_jd_tishrey1_next_year = getDaysFrom3744(*year+1) + 1715119
 
 	/* Check if computed year was underestimated */
 	if internal_jd_tishrey1_next_year <= jd {
 		*year = *year + 1
 		internal_jd_tishrey1 = internal_jd_tishrey1_next_year
-		internal_jd_tishrey1_next_year = HdateDaysFrom3744(*year+1) + 1715119
+		internal_jd_tishrey1_next_year = getDaysFrom3744(*year+1) + 1715119
 	}
 
 	size_of_year = internal_jd_tishrey1_next_year - internal_jd_tishrey1
@@ -289,44 +291,32 @@ func HdateJdToHdate(jd int, day *int, month *int, year *int, jd_tishrey1 *int, j
 @param y Year in 4 digits e.g. 2001
 */
 
-func HdateSetGdate(h *HebDate, d int, m int, y int) *HebDate {
+func (h *HebDate) SetGdate(d int, m int, y int) {
 	var jd, jd_tishrey1, jd_tishrey1_next_year int
 
-	if h == nil {
-		return nil
-	}
-
-	/* check for null dates (kobi) */
 	if (d == 0) || (m == 0) {
-		///////UPDATE THIS
-		/*
-			struct tm *tm
-			long t
-			// FIXME: day start at 6:00 or 12:00 like in Gregorian cal. ?
-			t = time (0)
-			tm = localtime (&t)
-			d = tm.tm_mday
-			m = tm.tm_mon + 1
-			y = tm.tm_year + 1900
-		*/
+		now := time.Now()
+		year, month, day := now.Date()
+
+		d = day
+		m = int(month)
+		y = year
 	}
 
 	h.gd_day = d
 	h.gd_mon = m
 	h.gd_year = y
 
-	jd = HdateGdateToJd(d, m, y)
-	HdateJdToHdate(jd, &(h.hd_day), &(h.hd_mon), &(h.hd_year), &jd_tishrey1, &jd_tishrey1_next_year)
+	jd = gDateToJd(d, m, y)
+	jDToHdate(jd, &(h.hd_day), &(h.hd_mon), &(h.hd_year), &jd_tishrey1, &jd_tishrey1_next_year)
 
 	h.hd_dw = (jd+1)%7 + 1
 	h.hd_size_of_year = jd_tishrey1_next_year - jd_tishrey1
 	h.hd_new_year_dw = (jd_tishrey1+1)%7 + 1
-	h.hd_year_type = HdateGetYearType(h.hd_size_of_year, h.hd_new_year_dw)
+	h.hd_year_type = getYearType(h.hd_size_of_year, h.hd_new_year_dw)
 	h.hd_jd = jd
 	h.hd_days = jd - jd_tishrey1 + 1
 	h.hd_weeks = ((h.hd_days-1)+(h.hd_new_year_dw-1))/7 + 1
-
-	return (h)
 }
 
 /**
@@ -336,29 +326,23 @@ func HdateSetGdate(h *HebDate, d int, m int, y int) *HebDate {
 @param m Month 1..14 ,  if m or d is 0 return current date.
 @param y Year in 4 digits e.g. 5731
 */
-func HdateSetHdate(h *HebDate, d int, m int, y int) *HebDate {
+func (h *HebDate) SetHdate(d int, m int, y int) {
 	var jd, jd_tishrey1, jd_tishrey1_next_year int
-
-	if h == nil {
-		return nil
-	}
 
 	h.hd_day = d
 	h.hd_mon = m
 	h.hd_year = y
 
-	jd = HdateHdateToJd(d, m, y, &jd_tishrey1, &jd_tishrey1_next_year)
-	HdateJdToGdate(jd, &(h.gd_day), &(h.gd_mon), &(h.gd_year))
+	jd = hDateToJd(d, m, y, &jd_tishrey1, &jd_tishrey1_next_year)
+	jDToGdate(jd, &(h.gd_day), &(h.gd_mon), &(h.gd_year))
 
 	h.hd_dw = (jd+1)%7 + 1
 	h.hd_size_of_year = jd_tishrey1_next_year - jd_tishrey1
 	h.hd_new_year_dw = (jd_tishrey1+1)%7 + 1
-	h.hd_year_type = HdateGetYearType(h.hd_size_of_year, h.hd_new_year_dw)
+	h.hd_year_type = getYearType(h.hd_size_of_year, h.hd_new_year_dw)
 	h.hd_jd = jd
 	h.hd_days = jd - jd_tishrey1 + 1
 	h.hd_weeks = ((h.hd_days-1)+(h.hd_new_year_dw-1))/7 + 1
-
-	return (h)
 }
 
 /**
@@ -366,25 +350,19 @@ func HdateSetHdate(h *HebDate, d int, m int, y int) *HebDate {
 
 @param jd the julian day number.
 */
-func HdateSetJd(h *HebDate, jd int) *HebDate {
+func (h *HebDate) SetJd(jd int) {
 	var jd_tishrey1, jd_tishrey1_next_year int
 
-	if h == nil {
-		return nil
-	}
-
-	HdateJdToGdate(jd, &(h.gd_day), &(h.gd_mon), &(h.gd_year))
-	HdateJdToHdate(jd, &(h.hd_day), &(h.hd_mon), &(h.hd_year), &jd_tishrey1, &jd_tishrey1_next_year)
+	jDToGdate(jd, &(h.gd_day), &(h.gd_mon), &(h.gd_year))
+	jDToHdate(jd, &(h.hd_day), &(h.hd_mon), &(h.hd_year), &jd_tishrey1, &jd_tishrey1_next_year)
 
 	h.hd_dw = (jd+1)%7 + 1
 	h.hd_size_of_year = jd_tishrey1_next_year - jd_tishrey1
 	h.hd_new_year_dw = (jd_tishrey1+1)%7 + 1
-	h.hd_year_type = HdateGetYearType(h.hd_size_of_year, h.hd_new_year_dw)
+	h.hd_year_type = getYearType(h.hd_size_of_year, h.hd_new_year_dw)
 	h.hd_jd = jd
 	h.hd_days = jd - jd_tishrey1 + 1
 	h.hd_weeks = ((h.hd_days-1)+(h.hd_new_year_dw-1))/7 + 1
-
-	return (h)
 }
 
 /********************************************************************************/
@@ -396,7 +374,7 @@ func HdateSetJd(h *HebDate, jd int) *HebDate {
 @param h pointer this hdate struct.
 @return the Gregorian day of the month, 1..31.
 */
-func HdateGetGday(h *HebDate) int {
+func (h *HebDate) GetGday() int {
 	return h.gd_day
 }
 
@@ -407,7 +385,7 @@ func HdateGetGday(h *HebDate) int {
 @return the Gregorian month, jan = 1.
 */
 
-func HdateGetGmonth(h *HebDate) int {
+func (h *HebDate) GetGmonth() int {
 
 	return h.gd_mon
 }
@@ -418,7 +396,7 @@ func HdateGetGmonth(h *HebDate) int {
 @param h pointer this hdate struct.
 @return the Gregorian year.
 */
-func HdateGetGyear(h *HebDate) int {
+func (h *HebDate) GetGyear() int {
 
 	return h.gd_year
 }
@@ -429,7 +407,7 @@ func HdateGetGyear(h *HebDate) int {
 @param h pointer this hdate struct.
 @return the Hebrew day of the month, 1..30.
 */
-func HdateGetHday(h *HebDate) int {
+func (h *HebDate) GetHday() int {
 
 	return h.hd_day
 }
@@ -440,7 +418,7 @@ func HdateGetHday(h *HebDate) int {
 @param h pointer this hdate struct.
 @return the Hebrew month, Tishery = 1 .. Adar I =13, Adar II = 14.
 */
-func HdateGetHmonth(h *HebDate) int {
+func (h *HebDate) GetHmonth() int {
 
 	return h.hd_mon
 }
@@ -451,7 +429,7 @@ func HdateGetHmonth(h *HebDate) int {
 @param h pointer this hdate struct.
 @return the Hebrew year.
 */
-func HdateGetHyear(h *HebDate) int {
+func (h *HebDate) GetHyear() int {
 
 	return h.hd_year
 }
@@ -462,7 +440,7 @@ func HdateGetHyear(h *HebDate) int {
 @param h pointer this hdate struct.
 @return the the day of the week.
 */
-func HdateGetDayOfTheWeek(h *HebDate) int {
+func (h *HebDate) GetDayOfTheWeek() int {
 
 	return h.hd_dw
 }
@@ -473,7 +451,7 @@ func HdateGetDayOfTheWeek(h *HebDate) int {
 @param h pointer this hdate struct.
 @return the the size of the hebrew year.
 */
-func HdateGetSizeOfyear(h *HebDate) int {
+func (h *HebDate) GetSizeOfyear() int {
 
 	return h.hd_size_of_year
 }
@@ -484,7 +462,7 @@ func HdateGetSizeOfyear(h *HebDate) int {
 @param h pointer this hdate struct.
 @return the the new year day of the week.
 */
-func HdateGetNewYearDayOfTheWeek(h *HebDate) int {
+func (h *HebDate) GetNewYearDayOfTheWeek() int {
 
 	return h.hd_new_year_dw
 }
@@ -495,7 +473,7 @@ func HdateGetNewYearDayOfTheWeek(h *HebDate) int {
 @param h pointer this hdate struct.
 @return the Julian day number.
 */
-func HdateGetJulian(h *HebDate) int {
+func (h *HebDate) GetJulian() int {
 
 	return h.hd_jd
 }
@@ -506,7 +484,7 @@ func HdateGetJulian(h *HebDate) int {
 @param h pointer this hdate struct.
 @return the number of days passed since 1 tishrey.
 */
-func HdateGetDays(h *HebDate) int {
+func (h *HebDate) GetDays() int {
 
 	return h.hd_days
 }
@@ -517,7 +495,7 @@ func HdateGetDays(h *HebDate) int {
 @param h pointer this hdate struct.
 @return the number of weeks passed since 1 tishrey.
 */
-func HdateGetWeeks(h *HebDate) int {
+func (h *HebDate) GetWeeks() int {
 
 	return h.hd_weeks
 }
@@ -534,7 +512,7 @@ func NewHdate() *HebDate {
 	h := &HebDate{}
 
 	/* get todays date */
-	HdateSetGdate(h, 0, 0, 0)
+	h.SetGdate(0, 0, 0)
 
 	return h
 }
