@@ -2,6 +2,10 @@
 
 A pure go implementation of libhdate (http://libhdate.sourceforge.net)
 
+## Install
+
+`go get github.com/dakom/libhdate-go/libhdate`
+
 ## Notes
 
 This was done mostly in the blind, didn't touch the original libhdate calculations (at least I tried not to!)
@@ -17,23 +21,33 @@ While all the functions from libhdate are there and ported over, they are not ex
 In general, use use HDateExtended{}, run Calculate() and then grab properties or generated strings from there
 
 ```
-latitude := 31.8903
-longitude := 35.0104
-timezone := 3
+package main
 
-h := &libhdate.HDateExtended{}
+import (
+	"fmt"
+	"time"
+	"github.com/dakom/libhdate-go/libhdate"
+)
 
-h.SetTime(time.Now())
-//or a specific date
-//h.SetGdate(25, 3, 2016) //Shushan Purim
-//h.SetGdate(26, 3, 2016) //Shabbos (parsha reading tzav)
-//h.SetGdate(7, 5, 2016) //14th day of Omer parsha kedoshim
+func main() {
+	latitude := 31.8903
+	longitude := 35.0104
+	timezone := 3
 
-h.Calculate(latitude, longitude, timezone)
+	h := &libhdate.HDateExtended{}
 
-fmt.Printf("date: %v\n", h)
-fmt.Printf("omer: %v holyday: %v reading: %v\n", h.GetOmerString(), h.GetHolydayString(), h.GetParshaString())
-fmt.Printf("sun: %v first_light: %v talit: %v sunrise: %v midday: %v sunset: %v first_stars: %v three_stars: %v\n", h.GetSunString(), h.GetFirstlightString(), h.GetTalitString(), h.GetSunriseString(), h.GetMiddayString(), h.GetSunsetString(), h.GetFirstStarsString(), h.GetThreeStarsString())
+	h.SetTime(time.Now())
+	//or a specific date
+	//h.SetGdate(25, 3, 2016) //Shushan Purim
+	//h.SetGdate(26, 3, 2016) //Shabbos (parsha reading tzav)
+	//h.SetGdate(7, 5, 2016) //14th day of Omer parsha kedoshim
+
+	h.Calculate(latitude, longitude, timezone)
+
+	fmt.Printf("date: %v\n", h)
+	fmt.Printf("omer: %v holyday: %v reading: %v\n", h.GetOmerString(), h.GetHolydayString(), h.GetParshaString())
+	fmt.Printf("sun: %v first_light: %v talit: %v sunrise: %v midday: %v sunset: %v first_stars: %v three_stars: %v\n", h.GetSunString(), h.GetFirstlightString(), h.GetTalitString(), h.GetSunriseString(), h.GetMiddayString(), h.GetSunsetString(), h.GetFirstStarsString(), h.GetThreeStarsString())
+}
 ```
 
 This is also runnable via `go run ./example/example.go`
@@ -42,6 +56,6 @@ This is also runnable via `go run ./example/example.go`
 
 `go test ./tests`
 
-## TODO
+## Todo
 
 1. Cleanup some comments and function description which was left as-is from the C library
