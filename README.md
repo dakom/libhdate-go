@@ -12,13 +12,13 @@ This was done mostly in the blind, didn't touch the original libhdate calculatio
 
 It's more just a pure C to Go language port than anything else, with a few small tweaks due to the language and idiomatic differences
 
-There are a few additions (in extra.go) to make usability easier
-
 While all the functions from libhdate are there and ported over, they are not exported unless really intended to be used outside the package
+
+There are a few additions (in extra.go) to make usability clearer and easier
 
 ## Usage
 
-In general, use use HDateExtended{}, run Calculate() and then grab properties or generated strings from there
+In general, use HDateExtended{}, run Calculate() and then grab properties or generated strings from there. See extra.go for the available properties/methods. Here's an example:
 
 ```
 package main
