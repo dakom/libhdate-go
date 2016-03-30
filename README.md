@@ -12,13 +12,15 @@ This was done mostly in the blind, didn't touch the original libhdate calculatio
 
 It's more just a pure C to Go language port than anything else, with a few small tweaks due to the language and idiomatic differences
 
+Similarly, values in the original libhdate are kept in-tact (i.e. Adar bet is month #14)
+
 While all the functions from libhdate are there and ported over, they are not exported unless really intended to be used outside the package
 
 There are a few additions (in [extra.go](libhdate/extra.go)) to make usability clearer and easier
 
 ## Usage
 
-In general, use HDateExtended{}, run Calculate() and then grab properties or generated strings from there. See [extra.go](libhdate/extra.go) and the bottom half of [julian.go](libhdate/julian.go) for the available properties/methods. Here's an example:
+In general, use HDateExtended{}, run Calculate() and then grab properties or generated strings from there. See [extra.go](libhdate/extra.go) and the bottom half of [julian.go](libhdate/julian.go) for most of the useful exported properties/methods. Here's an example:
 
 ```
 package main
@@ -26,6 +28,7 @@ package main
 import (
 	"fmt"
 	"time"
+
 	"github.com/dakom/libhdate-go/libhdate"
 )
 
@@ -45,9 +48,12 @@ func main() {
 	h.Calculate(latitude, longitude, timezone)
 
 	fmt.Printf("date: %v\n", h)
+	fmt.Printf("Gregorian dd-mm-yyyy: %02d-%02d-%04d\n", h.GetGday(), h.GetGmonth(), h.GetGyear())
+	fmt.Printf("Hebrew dd-mm-yyyy: %02d-%02d-%04d\n", h.GetHday(), h.GetHmonth(), h.GetHyear())
 	fmt.Printf("omer: %v holyday: %v reading: %v\n", h.GetOmerString(), h.GetHolydayString(), h.GetParshaString())
 	fmt.Printf("sun: %v first_light: %v talit: %v sunrise: %v midday: %v sunset: %v first_stars: %v three_stars: %v\n", h.GetSunString(), h.GetFirstlightString(), h.GetTalitString(), h.GetSunriseString(), h.GetMiddayString(), h.GetSunsetString(), h.GetFirstStarsString(), h.GetThreeStarsString())
 }
+
 ```
 
 This is also runnable via `go run ./example/example.go`
