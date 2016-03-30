@@ -1,15 +1,18 @@
 # libhdate-go
+
 A pure go implementation of libhdate (http://libhdate.sourceforge.net)
 
-With a few extra additions to make useability easier
+## Notes
 
-## Testing
+This was done mostly in the blind, didn't touch the original libhdate calculations (at least I tried not to!)
 
-`go test ./tests`
+It's more just a pure c to go language port than anything, with a few small tweaks due to the language and idiomatic differences
+
+Also added a few extra additions in extra.go to make usability easier (in general, use HDateExtended{} not HDate{})
+
+While all the functions from libhdate are there and ported over, they are not exported unless really intended to be used outside the package
 
 ## Usage
-
-Runnable via `go run ./example/example.go`
 
 ```
 latitude := 31.8903
@@ -30,6 +33,13 @@ fmt.Printf("date: %v\n", h)
 fmt.Printf("omer: %v holyday: %v reading: %v\n", h.GetOmerString(), h.GetHolydayString(), h.GetParshaString())
 fmt.Printf("sun: %v first_light: %v talit: %v sunrise: %v midday: %v sunset: %v first_stars: %v three_stars: %v\n", h.GetSunString(), h.GetFirstlightString(), h.GetTalitString(), h.GetSunriseString(), h.GetMiddayString(), h.GetSunsetString(), h.GetFirstStarsString(), h.GetThreeStarsString())
 ```
+
+This is also runnable via `go run ./example/example.go`
+
+## Testing
+
+`go test ./tests`
+
 ## TODO
 
 1. Cleanup some comments and function description which was left as-is from the C library
