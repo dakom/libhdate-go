@@ -1,3 +1,4 @@
 language: go
 
-script: ./scripts/travis-build.sh
+script:
+  - ./scripts/travis-build.sh
