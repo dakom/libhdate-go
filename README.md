@@ -18,7 +18,7 @@ There are a few additions (in extra.go) to make usability clearer and easier
 
 ## Usage
 
-In general, use HDateExtended{}, run Calculate() and then grab properties or generated strings from there. See extra.go and the bottom half of julien.go for the available properties/methods. Here's an example:
+In general, use HDateExtended{}, run Calculate() and then grab properties or generated strings from there. See extra.go and the bottom half of julian.go for the available properties/methods. Here's an example:
 
 ```
 package main
