@@ -5,7 +5,7 @@ go:
 #- tip # NOTE: disabled - see https://github.com/travis-ci/gimme/issues/38
 
 install:
-- echo 'skipping install step...'
+- echo "skipping install step..."
 
 script:
 - go build ./libhdate
