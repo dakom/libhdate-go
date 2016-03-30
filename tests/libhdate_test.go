@@ -77,8 +77,7 @@ func TestExtendedCalculation(t *testing.T) {
 	omerCountKedoshim.SetGdate(7, 5, 2016) //14th day of Omer parsha kedoshim
 	omerCountKedoshim.Calculate(latitude, longitude, timezone)
 
-	//checkIntMatch(t, "shushan purim", 14, shushanPurim.HolydayIndex)
-	checkIntMatch(t, "shushan purim", 15, shushanPurim.HolydayIndex)
+	checkIntMatch(t, "shushan purim", 14, shushanPurim.HolydayIndex)
 	checkIntMatch(t, "parsha tzav", 25, parshaTzav.ParshaIndex)
 	checkIntMatch(t, "parsha kedoshim", 30, omerCountKedoshim.ParshaIndex)
 	checkIntMatch(t, "day 14 of omer", 14, omerCountKedoshim.OmerIndex)
