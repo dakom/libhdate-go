@@ -1,4 +1,13 @@
 language: go
 
-install: true
-script: ./scripts/travis-build.sh
+go:
+- 1.6
+#- tip # NOTE: disabled - see https://github.com/travis-ci/gimme/issues/38
+
+install:
+- echo 'skipping install step...'
+
+script:
+- go test -v ./...
+- go vet ./...
+- diff -u <(echo -n) <(gofmt -d -s .)
