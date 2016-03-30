@@ -1,7 +1,3 @@
 language: go
 
-script: go build libhdate && go test ./tests
-
-go:
-  - 1.6
-  - tip
+script: ./scripts/travis-build.sh
