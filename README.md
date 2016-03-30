@@ -6,13 +6,15 @@ A pure go implementation of libhdate (http://libhdate.sourceforge.net)
 
 This was done mostly in the blind, didn't touch the original libhdate calculations (at least I tried not to!)
 
-It's more just a pure c to go language port than anything, with a few small tweaks due to the language and idiomatic differences
+It's more just a pure C to Go language port than anything else, with a few small tweaks due to the language and idiomatic differences
 
-Also added a few extra additions in extra.go to make usability easier (in general, use HDateExtended{} not HDate{})
+There are a few additions (in extra.go) to make usability easier
 
 While all the functions from libhdate are there and ported over, they are not exported unless really intended to be used outside the package
 
 ## Usage
+
+In general, use use HDateExtended{}, run Calculate() and then grab properties or generated strings from there
 
 ```
 latitude := 31.8903
