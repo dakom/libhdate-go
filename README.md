@@ -14,11 +14,11 @@ It's more just a pure C to Go language port than anything else, with a few small
 
 While all the functions from libhdate are there and ported over, they are not exported unless really intended to be used outside the package
 
-There are a few additions (in [a relative link]libhdate/extra.go) to make usability clearer and easier
+There are a few additions (in [extra.go](libhdate/extra.go)) to make usability clearer and easier
 
 ## Usage
 
-In general, use HDateExtended{}, run Calculate() and then grab properties or generated strings from there. See [a relative link]libhdate/extra.go and the bottom half of [a relative link]libhdate/julian.go for the available properties/methods. Here's an example:
+In general, use HDateExtended{}, run Calculate() and then grab properties or generated strings from there. See [extra.go](libhdate/extra.go) and the bottom half of [julian.go](libhdate/julian.go) for the available properties/methods. Here's an example:
 
 ```
 package main
