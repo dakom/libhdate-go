@@ -44,7 +44,7 @@ the sky there.
 @param sunrise return the utc sunrise in minutes
 @param sunset return the utc sunset in minutes
 */
-func getUtcSunTimeDeg(day int, month int, year int, latitude float64, longitude float64, deg float64, sunrise *int, sunset *int) {
+func getUtcSunTimeDeg(day int, month int, year int, latitude float64, longitude float64, deg float64) (int, int) {
 	var gama float64                                  /* location of sun in yearly cycle in radians */
 	var eqtime float64                                /* diffference betwen sun noon and clock noon */
 	var decl float64                                  /* sun declanation */
@@ -86,10 +86,10 @@ func getUtcSunTimeDeg(day int, month int, year int, latitude float64, longitude 
 	ha = 720.0 * ha / math.Pi
 
 	/* get sunset/rise times in utc wall clock in minutes from 00:00 time */
-	*sunrise = (int)(720.0 - 4.0*longitude - ha - eqtime)
-	*sunset = (int)(720.0 - 4.0*longitude + ha - eqtime)
+	sunrise := (int)(720.0 - 4.0*longitude - ha - eqtime)
+	sunset := (int)(720.0 - 4.0*longitude + ha - eqtime)
 
-	return
+	return sunrise, sunset
 }
 
 /**
@@ -103,10 +103,8 @@ func getUtcSunTimeDeg(day int, month int, year int, latitude float64, longitude 
 @parm sunrise return the utc sunrise in minutes
 @parm sunset return the utc sunset in minutes
 */
-func getUtcSunTime(day int, month int, year int, latitude float64, longitude float64, sunrise *int, sunset *int) {
-	getUtcSunTimeDeg(day, month, year, latitude, longitude, 90.833, sunrise, sunset)
-
-	return
+func getUtcSunTime(day int, month int, year int, latitude float64, longitude float64) (int, int) {
+	return getUtcSunTimeDeg(day, month, year, latitude, longitude, 90.833)
 }
 
 /**
@@ -117,30 +115,32 @@ func getUtcSunTime(day int, month int, year int, latitude float64, longitude flo
 @parm year this year
 @parm longitude longitude to use in calculations
 @parm latitude latitude to use in calculations
-@parm sun_hour return the length of shaa zaminit in minutes
-@parm first_light return the utc alut ha-shachar in minutes
-@parm talit return the utc tphilin and talit in minutes
-@parm sunrise return the utc sunrise in minutes
-@parm midday return the utc midday in minutes
-@parm sunset return the utc sunset in minutes
-@parm first_stars return the utc tzeit hacochavim in minutes
-@parm three_stars return the utc shlosha cochavim in minutes
+@return sun_hour return the length of shaa zaminit in minutes
+@return first_light return the utc alut ha-shachar in minutes
+@return talit return the utc tphilin and talit in minutes
+@return sunrise return the utc sunrise in minutes
+@return midday return the utc midday in minutes
+@return sunset return the utc sunset in minutes
+@return first_stars return the utc tzeit hacochavim in minutes
+@return three_stars return the utc shlosha cochavim in minutes
+
 */
-func GetUtcSunTimeFull(day int, month int, year int, latitude float64, longitude float64, sun_hour *int, first_light *int, talit *int, sunrise *int, midday *int, sunset *int, first_stars *int, three_stars *int) {
-	var place_holder int
+func getUtcSunTimeFull(day int, month int, year int, latitude float64, longitude float64) (int, int, int, int, int, int, int, int) {
 
 	/* sunset and rise time */
-	getUtcSunTimeDeg(day, month, year, latitude, longitude, 90.833, sunrise, sunset)
+	sunrise, sunset := getUtcSunTimeDeg(day, month, year, latitude, longitude, 90.833)
 
 	/* shaa zmanit by gara, 1/12 of light time */
-	*sun_hour = (*sunset - *sunrise) / 12
-	*midday = (*sunset + *sunrise) / 2
+	sun_hour := (sunset - sunrise) / 12
+	midday := (sunset + sunrise) / 2
 
 	/* get times of the different sun angles */
-	getUtcSunTimeDeg(day, month, year, latitude, longitude, 106.01, first_light, &place_holder)
-	getUtcSunTimeDeg(day, month, year, latitude, longitude, 101.0, talit, &place_holder)
-	getUtcSunTimeDeg(day, month, year, latitude, longitude, 96.0, &place_holder, first_stars)
-	getUtcSunTimeDeg(day, month, year, latitude, longitude, 98.5, &place_holder, three_stars)
+	first_light, _ := getUtcSunTimeDeg(day, month, year, latitude, longitude, 106.01)
+	talit, _ := getUtcSunTimeDeg(day, month, year, latitude, longitude, 101.0)
+	_, first_stars := getUtcSunTimeDeg(day, month, year, latitude, longitude, 96.0)
+	_, three_stars := getUtcSunTimeDeg(day, month, year, latitude, longitude, 98.5)
 
-	return
+	//sun_hour *int, first_light *int, talit *int, sunrise *int, midday *int, sunset *int, first_stars *int, three_stars *int
+
+	return sun_hour, first_light, talit, sunrise, midday, sunset, first_stars, three_stars
 }

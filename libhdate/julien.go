@@ -134,9 +134,9 @@ func gDateToJd(day int, month int, year int) int {
 @param day Day of month 1..31
 @param month Month 1..14 (13 - Adar 1, 14 - Adar 2)
 @param year Hebrew year in 4 digits e.g. 5753
-@return The julian day number
+@return The julian day number, 1 tishrey, and 1 tishrey of the following year
 */
-func hDateToJd(day int, month int, year int, jd_tishrey1 *int, jd_tishrey1_next_year *int) int {
+func hDateToJd(day int, month int, year int) (int, int, int) {
 	var length_of_year, jd, days_from_3744 int
 
 	/* Adjust for leap year */
@@ -169,13 +169,10 @@ func hDateToJd(day int, month int, year int, jd_tishrey1 *int, jd_tishrey1_next_
 	/* adjust to julian */
 	jd = day + 1715118
 
-	/* return the 1 of tishrey julians */
-	if jd_tishrey1 != nil && jd_tishrey1_next_year != nil {
-		*jd_tishrey1 = days_from_3744 + 1715119
-		*jd_tishrey1_next_year = *jd_tishrey1 + length_of_year
-	}
+	jd_tishrey1 := days_from_3744 + 1715119
+	jd_tishrey1_next_year := jd_tishrey1 + length_of_year
 
-	return jd
+	return jd, jd_tishrey1, jd_tishrey1_next_year
 }
 
 /**
@@ -189,8 +186,8 @@ Algorithm from 'Julian and Gregorian Day Numbers' by Peter Meyer
 @param m Return Month 1..12
 @param y Return Year in 4 digits e.g. 2001
 */
-func jDToGdate(jd int, d *int, m *int, y *int) {
-	var l, n, i, j int
+func jDToGdate(jd int) (int, int, int) {
+	var l, n, i, j, day, month, year int
 
 	l = jd + 68569
 	n = (4 * l) / 146097
@@ -198,12 +195,12 @@ func jDToGdate(jd int, d *int, m *int, y *int) {
 	i = (4000 * (l + 1)) / 1461001 /* that's 1,461,001 */
 	l = l - (1461*i)/4 + 31
 	j = (80 * l) / 2447
-	*d = l - (2447*j)/80
+	day = l - (2447*j)/80
 	l = j / 11
-	*m = j + 2 - (12 * l)
-	*y = 100*(n-49) + i + l /* that's a lower-case L */
+	month = j + 2 - (12 * l)
+	year = 100*(n-49) + i + l /* that's a lower-case L */
 
-	return
+	return day, month, year
 }
 
 /**
@@ -215,69 +212,65 @@ func jDToGdate(jd int, d *int, m *int, y *int) {
 @param day Return Day of month 1..31
 @param month Return Month 1..14 (13 - Adar 1, 14 - Adar 2)
 @param year Return Year in 4 digits e.g. 2001
+
+
 */
-func jDToHdate(jd int, day *int, month *int, year *int, jd_tishrey1 *int, jd_tishrey1_next_year *int) {
-	var days, size_of_year, internal_jd_tishrey1, internal_jd_tishrey1_next_year int
+func jDToHdate(jd int, day int, month int, year int) (int, int, int, int, int) {
+	var days, size_of_year, jd_tishrey1, jd_tishrey1_next_year int
 
 	/* calculate Gregorian date */
-	jDToGdate(jd, day, month, year)
+	day, month, year = jDToGdate(jd)
 
 	/* Guess Hebrew year is Gregorian year + 3760 */
-	*year = *year + 3760
+	year = year + 3760
 
-	internal_jd_tishrey1 = getDaysFrom3744(*year) + 1715119
-	internal_jd_tishrey1_next_year = getDaysFrom3744(*year+1) + 1715119
+	jd_tishrey1 = getDaysFrom3744(year) + 1715119
+	jd_tishrey1_next_year = getDaysFrom3744(year+1) + 1715119
 
 	/* Check if computed year was underestimated */
-	if internal_jd_tishrey1_next_year <= jd {
-		*year = *year + 1
-		internal_jd_tishrey1 = internal_jd_tishrey1_next_year
-		internal_jd_tishrey1_next_year = getDaysFrom3744(*year+1) + 1715119
+	if jd_tishrey1_next_year <= jd {
+		year = year + 1
+		jd_tishrey1 = jd_tishrey1_next_year
+		jd_tishrey1_next_year = getDaysFrom3744(year+1) + 1715119
 	}
 
-	size_of_year = internal_jd_tishrey1_next_year - internal_jd_tishrey1
+	size_of_year = jd_tishrey1_next_year - jd_tishrey1
 
 	/* days into this year, first month 0..29 */
-	days = jd - internal_jd_tishrey1
+	days = jd - jd_tishrey1
 
 	/* last 8 months allways have 236 days */
 	if days >= (size_of_year - 236) /* in last 8 months */ {
 		days = days - (size_of_year - 236)
-		*month = days * 2 / 59
-		*day = days - (*month*59+1)/2 + 1
+		month = days * 2 / 59
+		day = days - (month*59+1)/2 + 1
 
-		*month = *month + 4 + 1
+		month = month + 4 + 1
 
 		/* if leap */
-		if size_of_year > 355 && *month <= 6 {
-			*month = *month + 8
+		if size_of_year > 355 && month <= 6 {
+			month = month + 8
 		}
 	} else /* in 4-5 first months */ {
 		/* Special cases for this year */
 		if size_of_year%10 > 4 && days == 59 /* long Heshvan (day 30 of Heshvan) */ {
-			*month = 1
-			*day = 30
+			month = 1
+			day = 30
 		} else if size_of_year%10 > 4 && days > 59 /* long Heshvan */ {
-			*month = (days - 1) * 2 / 59
-			*day = days - (*month*59+1)/2
+			month = (days - 1) * 2 / 59
+			day = days - (month*59+1)/2
 		} else if size_of_year%10 < 4 && days > 87 /* short kislev */ {
-			*month = (days + 1) * 2 / 59
-			*day = days - (*month*59+1)/2 + 2
+			month = (days + 1) * 2 / 59
+			day = days - (month*59+1)/2 + 2
 		} else /* regular months */ {
-			*month = days * 2 / 59
-			*day = days - (*month*59+1)/2 + 1
+			month = days * 2 / 59
+			day = days - (month*59+1)/2 + 1
 		}
 
-		*month = *month + 1
+		month = month + 1
 	}
 
-	/* return the 1 of tishrey julians */
-	if jd_tishrey1 != nil && jd_tishrey1_next_year != nil {
-		*jd_tishrey1 = internal_jd_tishrey1
-		*jd_tishrey1_next_year = internal_jd_tishrey1_next_year
-	}
-
-	return
+	return day, month, year, jd_tishrey1, jd_tishrey1_next_year
 }
 
 /********************************************************************************/
@@ -308,7 +301,7 @@ func (h *HebDate) SetGdate(d int, m int, y int) {
 	h.gd_year = y
 
 	jd = gDateToJd(d, m, y)
-	jDToHdate(jd, &(h.hd_day), &(h.hd_mon), &(h.hd_year), &jd_tishrey1, &jd_tishrey1_next_year)
+	h.hd_day, h.hd_mon, h.hd_year, jd_tishrey1, jd_tishrey1_next_year = jDToHdate(jd, h.hd_day, h.hd_mon, h.hd_year)
 
 	h.hd_dw = (jd+1)%7 + 1
 	h.hd_size_of_year = jd_tishrey1_next_year - jd_tishrey1
@@ -333,8 +326,8 @@ func (h *HebDate) SetHdate(d int, m int, y int) {
 	h.hd_mon = m
 	h.hd_year = y
 
-	jd = hDateToJd(d, m, y, &jd_tishrey1, &jd_tishrey1_next_year)
-	jDToGdate(jd, &(h.gd_day), &(h.gd_mon), &(h.gd_year))
+	jd, jd_tishrey1, jd_tishrey1_next_year = hDateToJd(d, m, y)
+	h.gd_day, h.gd_mon, h.gd_year = jDToGdate(jd)
 
 	h.hd_dw = (jd+1)%7 + 1
 	h.hd_size_of_year = jd_tishrey1_next_year - jd_tishrey1
@@ -353,8 +346,8 @@ func (h *HebDate) SetHdate(d int, m int, y int) {
 func (h *HebDate) SetJd(jd int) {
 	var jd_tishrey1, jd_tishrey1_next_year int
 
-	jDToGdate(jd, &(h.gd_day), &(h.gd_mon), &(h.gd_year))
-	jDToHdate(jd, &(h.hd_day), &(h.hd_mon), &(h.hd_year), &jd_tishrey1, &jd_tishrey1_next_year)
+	h.gd_day, h.gd_mon, h.gd_year = jDToGdate(jd)
+	h.hd_day, h.hd_mon, h.hd_year, jd_tishrey1, jd_tishrey1_next_year = jDToHdate(jd, h.hd_day, h.hd_mon, h.hd_year)
 
 	h.hd_dw = (jd+1)%7 + 1
 	h.hd_size_of_year = jd_tishrey1_next_year - jd_tishrey1
