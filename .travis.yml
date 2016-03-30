@@ -8,6 +8,5 @@ install:
 - echo 'skipping install step...'
 
 script:
-- go test -v ./...
-- go vet ./...
-- diff -u <(echo -n) <(gofmt -d -s .)
+- go build ./libhdate
+- go test ./tests
