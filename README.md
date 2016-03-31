@@ -16,11 +16,19 @@ Similarly, values in the original libhdate are kept in-tact (i.e. Adar bet is mo
 
 While all the functions from libhdate are there and ported over, they are not exported unless really intended to be used outside the package
 
-There are a few additions (in [extra.go](libhdate/extra.go)) to make usability clearer and easier
+There are a few additions (in [extra.go](libhdate/extra.go)) to make things clearer and easier, and a couple usage differences (see below)
 
 ## Usage
 
-In general, use HDateExtended{}, run Calculate() and then grab properties or generated strings from there. See [extra.go](libhdate/extra.go) and the bottom half of [julian.go](libhdate/julian.go) for most of the useful exported properties/methods. Here's an example:
+In general:
+
+1. Use HDateExtended{}
+2. Set the date (via Gregorian or Hebrew or Go's time.Time)
+3. Set .Diaspora (default is false)
+4. Run Calculate()
+5. Grab properties or generated strings from there.
+
+See [extra.go](libhdate/extra.go) and the bottom half of [julian.go](libhdate/julian.go) for most of the useful exported properties/methods. Here's an example:
 
 ```
 package main

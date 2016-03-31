@@ -5,9 +5,9 @@ package libhdate
 */
 type HebDate struct {
 	/** is diaspora */
-	diaspora bool
+	Diaspora bool
 	/** is Hebrew locale */
-	isHebrewLocale bool
+	IsHebrewLocale bool
 	/** The number of day in the hebrew month (1..31). */
 	hd_day int
 	/** The number of the hebrew month 1..14 (1 - tishre, 13 - adar 1, 14 - adar 2). */

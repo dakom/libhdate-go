@@ -22,7 +22,7 @@ func (h *HebDate) GetFormatDate(short_format bool) string {
 	var bet_h, hebrew_buffer1, hebrew_buffer2, hday_int_str, hyear_int_str, omer_str string
 	var hebrew_buffer1_len, hebrew_buffer2_len int = -1, -1
 
-	if h.isHebrewLocale {
+	if h.IsHebrewLocale {
 		bet_h = "ב"
 		hebrew_format = HDATE_STRING_HEBREW
 	}

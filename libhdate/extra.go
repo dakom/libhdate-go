@@ -7,20 +7,6 @@ import (
 	"time"
 )
 
-func (h *HebDate) SetTime(t time.Time) {
-	year, month, day := t.Date()
-
-	h.SetGdate(day, int(month), year)
-}
-
-func (h *HebDate) GetTime() time.Time {
-	return time.Date(h.GetGyear(), time.Month(h.GetGmonth()), h.GetGday(), 12, 0, 0, 0, time.UTC)
-}
-
-func (h *HebDate) String() string {
-	return h.GetFormatDate(false)
-}
-
 type HDateExtended struct {
 	HebDate
 
@@ -35,6 +21,21 @@ type HDateExtended struct {
 	SunsetMinutes     int
 	FirstStarsMinutes int
 	ThreeStarsMinutes int
+}
+
+func (h *HDateExtended) SetTime(t time.Time) {
+	year, month, day := t.Date()
+
+	h.SetGdate(day, int(month), year)
+}
+
+func (h *HDateExtended) GetTime() time.Time {
+	//uses mid-day just to keep things simple...
+	return time.Date(h.GetGyear(), time.Month(h.GetGmonth()), h.GetGday(), 12, 0, 0, 0, time.UTC)
+}
+
+func (h *HDateExtended) String() string {
+	return h.GetFormatDate(false)
 }
 
 func (h *HDateExtended) Calculate(latitude float64, longitude float64, timezone int) {

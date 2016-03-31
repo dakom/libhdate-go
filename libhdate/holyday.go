@@ -199,26 +199,26 @@ func (h *HebDate) GetHolyday() int {
 	/* diaspora holidays */
 
 	/* simchat tora only in diaspora in israel just one day shmini+simchat tora */
-	if holyday == 8 && !h.diaspora {
+	if holyday == 8 && !h.Diaspora {
 		holyday = 0
 	}
 	/* sukkot II holiday only in diaspora */
-	if holyday == 31 && !h.diaspora {
+	if holyday == 31 && !h.Diaspora {
 		holyday = 6
 	}
 
 	/* pesach II holiday only in diaspora */
-	if holyday == 32 && !h.diaspora {
+	if holyday == 32 && !h.Diaspora {
 		holyday = 16
 	}
 
 	/* shavot II holiday only in diaspora */
-	if holyday == 30 && !h.diaspora {
+	if holyday == 30 && !h.Diaspora {
 		holyday = 0
 	}
 
 	/* pesach VIII holiday only in diaspora */
-	if holyday == 29 && !h.diaspora {
+	if holyday == 29 && !h.Diaspora {
 		holyday = 0
 	}
 

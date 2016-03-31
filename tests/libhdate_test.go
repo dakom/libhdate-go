@@ -8,7 +8,7 @@ import (
 )
 
 func TestDateString(t *testing.T) {
-	hDate := &libhdate.HebDate{}
+	hDate := &libhdate.HDateExtended{}
 
 	// Set the Date
 	hDate.SetGdate(25, 3, 2016)
@@ -21,7 +21,7 @@ func TestDateString(t *testing.T) {
 
 func TestNowDefaults(t *testing.T) {
 
-	hDate := &libhdate.HebDate{}
+	hDate := &libhdate.HDateExtended{}
 	hDate.SetGdate(0, 0, 0)
 
 	now := time.Now()
@@ -35,21 +35,21 @@ func TestNowDefaults(t *testing.T) {
 
 func TestConversion(t *testing.T) {
 
-	hDate := &libhdate.HebDate{}
+	hDate := &libhdate.HDateExtended{}
 	hDate.SetGdate(14, 5, 1948)
 
 	checkIntMatch(t, "day", 5, hDate.GetHday())
 	checkIntMatch(t, "month", 8, hDate.GetHmonth())
 	checkIntMatch(t, "year", 5708, hDate.GetHyear())
 
-	hDate = &libhdate.HebDate{}
+	hDate = &libhdate.HDateExtended{}
 	hDate.SetHdate(5, 8, 5708)
 
 	checkIntMatch(t, "day", 14, hDate.GetGday())
 	checkIntMatch(t, "month", 5, hDate.GetGmonth())
 	checkIntMatch(t, "year", 1948, hDate.GetGyear())
 
-	hDate = &libhdate.HebDate{}
+	hDate = &libhdate.HDateExtended{}
 	now := time.Now()
 	hDate.SetTime(now)
 	tm := hDate.GetTime()
@@ -82,6 +82,20 @@ func TestExtendedCalculation(t *testing.T) {
 	checkIntMatch(t, "parsha kedoshim", 30, omerCountKedoshim.ParshaIndex)
 	checkIntMatch(t, "day 14 of omer", 14, omerCountKedoshim.OmerIndex)
 
+}
+
+func TestDiaspora(t *testing.T) {
+	latitude := 31.8903
+	longitude := 35.0104
+	timezone := 3
+
+	hDate := &libhdate.HDateExtended{}
+
+	hDate.Diaspora = true
+	hDate.SetGdate(7, 5, 2016)
+	hDate.Calculate(latitude, longitude, timezone)
+
+	checkIntMatch(t, "parsha acharei mot", 29, hDate.ParshaIndex)
 }
 
 func checkStringMatch(t *testing.T, label string, want string, got string) {

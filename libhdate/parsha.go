@@ -48,17 +48,17 @@ func (h *HebDate) GetParasha() int {
 
 	var reading int
 	var diasporaIndex int
-	if h.diaspora {
+	if h.Diaspora {
 		diasporaIndex = 1
 	}
 
 	/* if simhat tora return vezot habracha */
 	if h.hd_mon == 1 {
 		/* simhat tora is a day after shmini atzeret outsite israel */
-		if h.hd_day == 22 && !h.diaspora {
+		if h.hd_day == 22 && !h.Diaspora {
 			return 54
 		}
-		if h.hd_day == 23 && h.diaspora {
+		if h.hd_day == 23 && h.Diaspora {
 			return 54
 		}
 	}
@@ -98,7 +98,7 @@ func (h *HebDate) GetParasha() int {
 	case 4:
 		if h.hd_new_year_dw == 7 {
 			/* Simhat tora in israel */
-			if !h.diaspora {
+			if !h.Diaspora {
 				return 54
 			} else { /* Not simhat tora in diaspora */
 				return 0
@@ -123,10 +123,10 @@ func (h *HebDate) GetParasha() int {
 		/* pesach */
 		if (h.hd_mon == 7) && (h.hd_day > 14) {
 			/* Shmini of pesach in diaspora is on the 22 of the month*/
-			if h.diaspora && (h.hd_day <= 22) {
+			if h.Diaspora && (h.hd_day <= 22) {
 				return 0
 			}
-			if !h.diaspora && (h.hd_day < 22) {
+			if !h.Diaspora && (h.hd_day < 22) {
 				return 0
 			}
 		}
@@ -136,13 +136,13 @@ func (h *HebDate) GetParasha() int {
 			reading--
 
 			/* on diaspora, shmini of pesach may fall on shabat if next new year is on shabat */
-			if h.diaspora && (((h.hd_new_year_dw + h.hd_size_of_year) % 7) == 2) {
+			if h.Diaspora && (((h.hd_new_year_dw + h.hd_size_of_year) % 7) == 2) {
 				reading--
 			}
 		}
 
 		/* on diaspora, shavot may fall on shabat if next new year is on shabat */
-		if h.diaspora && (h.hd_mon < 13) && ((h.hd_mon > 9) || (h.hd_mon == 9 && h.hd_day >= 7)) && ((h.hd_new_year_dw+h.hd_size_of_year)%7) == 0 {
+		if h.Diaspora && (h.hd_mon < 13) && ((h.hd_mon > 9) || (h.hd_mon == 9 && h.hd_day >= 7)) && ((h.hd_new_year_dw+h.hd_size_of_year)%7) == 0 {
 			if h.hd_mon == 9 && h.hd_day == 7 {
 				return 0
 			} else {
