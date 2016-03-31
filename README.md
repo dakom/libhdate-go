@@ -48,10 +48,11 @@ func main() {
 	h := &libhdate.HDateExtended{}
 	h.Diaspora = true
 	h.SetTime(time.Now())
+	
 	//or a specific date
-	h.SetGdate(25, 3, 2016) //Shushan Purim
-	h.SetGdate(26, 3, 2016) //Shabbos (parsha reading tzav)
-	h.SetGdate(7, 5, 2016)  //14th day of Omer parsha acharei mot. Kedoshim if not in diaspora
+	//h.SetGdate(25, 3, 2016) //Shushan Purim
+	//h.SetGdate(26, 3, 2016) //Shabbos (parsha reading tzav)
+	//h.SetGdate(7, 5, 2016)  //14th day of Omer parsha acharei mot. Kedoshim if not in diaspora
 
 	h.Calculate(latitude, longitude, timezone)
 
